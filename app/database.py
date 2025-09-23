@@ -3,19 +3,14 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+# SQLite database URL (simple file-based database)
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app/db/db.sqlite3")
 
-if not DATABASE_URL:
-    raise ValueError("DATABASE_URL environment variable is required")
-
-if "railway.internal" in DATABASE_URL:
-    DATABASE_URL = os.getenv("DATABASE_PUBLIC_URL", DATABASE_URL)
-
-# Force SQLAlchemy to use psycopg3 instead of psycopg2
-if DATABASE_URL.startswith("postgresql://"):
-    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
-
-engine = create_engine(DATABASE_URL)
+# Create engine
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+)
 
 # Create SessionLocal class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
