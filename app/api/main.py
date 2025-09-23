@@ -14,7 +14,7 @@ from .models import (
     LoadSearchResponse, OfferEvaluateRequest, OfferEvaluateResponse,
     CallCompleteRequest, HealthResponse, MetricsResponse
 )
-from ..database import get_db, init_database
+from ..database import get_db, init_database, engine
 from .fmcsa import verify_carrier
 from .loads import search_loads
 from .offers import evaluate_offer
@@ -41,8 +41,34 @@ app.add_middleware(
 # Initialize database on startup
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database tables on startup."""
+    """Initialize database tables and seed data on startup."""
     init_database()
+    
+    # Auto-seed sample loads if database is empty
+    from sqlalchemy.orm import Session
+    from .db_models import Load
+    
+    session = Session(engine)
+    if session.query(Load).count() == 0:
+        # Add sample loads
+        sample_loads = [
+            Load(load_id="LOAD001", origin="Chicago, IL", destination="Atlanta, GA", 
+                 pickup_datetime="2024-01-15 08:00", delivery_datetime="2024-01-16 18:00",
+                 equipment_type="Dry Van", loadboard_rate=2500.00, weight=35000, 
+                 commodity_type="General Freight", miles=715),
+            Load(load_id="LOAD002", origin="Dallas, TX", destination="Phoenix, AZ",
+                 pickup_datetime="2024-01-16 10:00", delivery_datetime="2024-01-17 16:00", 
+                 equipment_type="Flatbed", loadboard_rate=2800.00, weight=45000,
+                 commodity_type="Steel Coils", miles=887),
+            Load(load_id="LOAD003", origin="Miami, FL", destination="New York, NY",
+                 pickup_datetime="2024-01-17 06:00", delivery_datetime="2024-01-19 14:00",
+                 equipment_type="Reefer", loadboard_rate=3200.00, weight=38000,
+                 commodity_type="Frozen Foods", miles=1283)
+        ]
+        for load in sample_loads:
+            session.add(load)
+        session.commit()
+    session.close()
 
 
 def verify_api_key(x_api_key: Optional[str] = Header(None, alias="x-api-key")):
