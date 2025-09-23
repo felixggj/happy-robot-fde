@@ -38,7 +38,7 @@ async def verify_carrier(mc_number: str) -> Dict[str, Any]:
         if identifier.upper().startswith("MC"):
             identifier = identifier.replace("MC-", "").replace("MC", "").strip()
         
-        url = f"{FMCSA_BASE_URL}/docketNumber/{identifier}"
+        url = f"{FMCSA_BASE_URL}/docket-number/{identifier}"
         
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get(
