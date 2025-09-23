@@ -4,7 +4,10 @@ from typing import Optional, List, Dict, Any
 import httpx
 import logging
 
+# Configure logging to ensure INFO level messages are shown
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 FMCSA_WEBKEY = os.getenv("FMCSA_WEBKEY")
 FMCSA_BASE_URL = "https://mobile.fmcsa.dot.gov/qc/services/carriers"
@@ -45,6 +48,14 @@ async def verify_carrier(mc_number: str) -> Dict[str, Any]:
         params = {"webKey": FMCSA_WEBKEY}
         headers = {
             "Accept": "application/json",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Cache-Control": "max-age=0",
             "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
         }
         
