@@ -76,13 +76,13 @@ def _parse_fmcsa_response(data: Dict[str, Any]) -> Dict[str, Any]:
                 "riskNotes": ["No carrier data found"]
             }
         
-        carrier = content[0]  # Take first result
+        carrier_data = content[0].get("carrier", {}) 
         
         # Extract key information
-        legal_name = carrier.get("legalName")
-        dot_number = carrier.get("dotNumber")
-        allow_to_operate = carrier.get("allowToOperate") == "Y"
-        out_of_service = carrier.get("outOfService")
+        legal_name = carrier_data.get("legalName")
+        dot_number = carrier_data.get("dotNumber")
+        allow_to_operate = carrier_data.get("allowedToOperate") == "Y"
+        out_of_service = carrier_data.get("oosDate") is not None
         
         # Determine eligibility based on official flags
         eligible = allow_to_operate and not out_of_service
