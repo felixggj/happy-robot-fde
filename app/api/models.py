@@ -67,6 +67,5 @@ class MetricsResponse(BaseModel):
     total_calls: int
     conversion_rate: float
     avg_negotiation_rounds: float
-    avg_rate_delta: float
     outcomes: dict
     sentiment: dict

@@ -17,7 +17,7 @@ from ..database import get_db, init_database, engine
 from .fmcsa import verify_carrier
 from .loads import search_loads
 from .offers import evaluate_offer
-from .db_models import CallSession
+from .db_models import CallSession, Load
 
 API_KEY = os.getenv("API_KEY")
 

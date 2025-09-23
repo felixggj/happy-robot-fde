@@ -33,16 +33,12 @@ async def verify_carrier(mc_number: str) -> Dict[str, Any]:
         return _fallback_verification(mc_number)
 
     try:
-        # Clean MC number (remove MC- prefix if present)
-        identifier = mc_number.strip()
-        if identifier.upper().startswith("MC"):
-            identifier = identifier.replace("MC-", "").replace("MC", "").strip()
-        
-        url = f"{FMCSA_BASE_URL}/{identifier}/docket-numbers"
+        # Extract digits only from MC number
+        mc_digits = "".join(filter(str.isdigit, mc_number))
         
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get(
-                url,
+                f"{FMCSA_BASE_URL}/docket-number/{mc_digits}",
                 params={"webKey": FMCSA_WEBKEY},
                 headers={"Accept": "application/json"}
             )
@@ -83,35 +79,25 @@ def _parse_fmcsa_response(data: Dict[str, Any]) -> Dict[str, Any]:
         carrier = content[0]  # Take first result
         
         # Extract key information
-        legal_name = carrier.get("legalName", "Unknown")
-        operating_status = carrier.get("operatingStatus", "").upper()
-        out_of_service_date = carrier.get("outOfServiceDate")
+        legal_name = carrier.get("legalName")
+        dot_number = carrier.get("dotNumber")
+        allow_to_operate = carrier.get("allowToOperate") == "Y"
+        out_of_service = carrier.get("outOfService")
         
-        # Determine eligibility
-        eligible = (
-            operating_status in ["ACTIVE", "AUTHORIZED"] and
-            not out_of_service_date
-        )
+        # Determine eligibility based on official flags
+        eligible = allow_to_operate and not out_of_service
         
         # Collect risk notes
         risk_notes = []
-        if operating_status not in ["ACTIVE", "AUTHORIZED"]:
-            risk_notes.append(f"Operating status: {operating_status}")
-        if out_of_service_date:
-            risk_notes.append(f"Out of service: {out_of_service_date}")
-            
-        # Check safety rating
-        safety_rating = carrier.get("safetyRating", "")
-        if safety_rating in ["UNSATISFACTORY"]:
-            risk_notes.append(f"Safety rating: {safety_rating}")
-            eligible = False
-        elif safety_rating in ["CONDITIONAL"]:
-            risk_notes.append(f"Safety rating: {safety_rating}")
+        if not allow_to_operate:
+            risk_notes.append("Not allowed to operate")
+        if out_of_service:
+            risk_notes.append("Out of service")
             
         return {
             "eligible": eligible,
             "legalName": legal_name,
-            "status": operating_status.lower(),
+            "status": "active" if eligible else "inactive",
             "riskNotes": risk_notes
         }
         
