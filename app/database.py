@@ -3,8 +3,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-# SQLite database URL (simple file-based database)
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app/db/db.sqlite3")
+DATABASE_URL = "sqlite:///./app/db/db.sqlite3"
 
 # Create engine
 engine = create_engine(
