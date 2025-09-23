@@ -40,7 +40,10 @@ async def verify_carrier(mc_number: str) -> Dict[str, Any]:
             response = await client.get(
                 f"{FMCSA_BASE_URL}/docket-number/{mc_digits}",
                 params={"webKey": FMCSA_WEBKEY},
-                headers={"Accept": "application/json"}
+                headers={
+                    "Accept": "application/json",
+                    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
+                }
             )
             
             if response.status_code == 200:
