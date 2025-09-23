@@ -11,6 +11,10 @@ if not DATABASE_URL:
 if "railway.internal" in DATABASE_URL:
     DATABASE_URL = os.getenv("DATABASE_PUBLIC_URL", DATABASE_URL)
 
+# Force SQLAlchemy to use psycopg3 instead of psycopg2
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
+
 engine = create_engine(DATABASE_URL)
 
 # Create SessionLocal class
