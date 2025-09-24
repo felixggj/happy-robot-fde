@@ -60,14 +60,14 @@ async def health_check():
 async def debug_loads(api_key: str = Depends(verify_api_key), db: Session = Depends(get_db)):
     """Debug endpoint to view all loads"""
     loads = db.query(Load).all()
-    return {"loads": [{"id": load.id, "origin": load.origin, "destination": load.destination, "loadboard_rate": load.loadboard_rate} for load in loads]}
+    return {"loads": [{"load_id": load.load_id, "origin": load.origin, "destination": load.destination, "loadboard_rate": load.loadboard_rate} for load in loads]}
 
 
 @app.get("/api/debug/call-sessions")
 async def debug_call_sessions(api_key: str = Depends(verify_api_key), db: Session = Depends(get_db)):
     """Debug endpoint to view all call sessions"""
     sessions = db.query(CallSession).all()
-    return {"sessions": [{"id": session.id, "session_id": session.session_id, "outcome": session.outcome, "sentiment": session.sentiment} for session in sessions]}
+    return {"sessions": [{"session_id": session.session_id, "outcome": session.outcome, "sentiment": session.sentiment} for session in sessions]}
 
 
 @app.post("/api/verify", response_model=CarrierVerifyResponse)

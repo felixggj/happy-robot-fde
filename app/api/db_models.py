@@ -1,5 +1,5 @@
 """SQLAlchemy database models."""
-from sqlalchemy import Column, Integer, String, Float, Text, TIMESTAMP, func
+from sqlalchemy import Column, Integer, String, Float, Text, DateTime, func
 from app.database import Base
 
 
@@ -21,7 +21,7 @@ class Load(Base):
     miles = Column(Float)
     dimensions = Column(String(100))
     status = Column(String(20), default="available")
-    created_at = Column(TIMESTAMP, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.current_timestamp())
 
 
 class CallSession(Base):
@@ -40,4 +40,4 @@ class CallSession(Base):
     call_duration = Column(Integer)
     transcript = Column(Text)
     extracted_data = Column(Text)  # JSON string
-    created_at = Column(TIMESTAMP, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.current_timestamp())
