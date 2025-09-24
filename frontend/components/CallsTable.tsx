@@ -9,7 +9,7 @@ interface CallSession {
   carrier_name: string;
   load_id: string;
   initial_rate: number;
-  negotiated_rate: number | null;
+  agreed_rate: number | null;
   negotiation_rounds: number;
   classification: string;
   sentiment: string;
@@ -143,8 +143,8 @@ export function CallsTable({}: CallsTableProps) {
                 </td>
                 <td className="px-4 py-1.5 whitespace-nowrap">
                   <div className="text-xs text-gray-900">
-                    {session.negotiated_rate
-                      ? `$${(session.negotiated_rate || 0).toLocaleString()}`
+                    {session.agreed_rate
+                      ? `$${(session.agreed_rate || 0).toLocaleString()}`
                       : `$${(session.initial_rate || 0).toLocaleString()}`}
                   </div>
                 </td>

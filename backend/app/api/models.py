@@ -37,7 +37,7 @@ class LoadSearchResponse(BaseModel):
 class OfferEvaluateRequest(BaseModel):
     load_id: str
     initial_rate: float
-    negotiated_rate: Optional[float] = None
+    agreed_rate: Optional[float] = None
     negotiation_rounds: Optional[int] = None
 
 
@@ -56,7 +56,7 @@ class CallCompleteRequest(BaseModel):
     carrier_name: Optional[str] = None
     transcript: str
     initial_rate: Optional[float] = None
-    negotiated_rate: Optional[float] = None
+    agreed_rate: Optional[float] = None
     negotiation_rounds: Optional[int] = None
     classification: str
     sentiment: Optional[str] = None
@@ -76,7 +76,7 @@ class CallSessionResponse(BaseModel):
     carrier_name: Optional[str] = None
     load_id: Optional[str] = None
     initial_rate: Optional[float] = None
-    negotiated_rate: Optional[float] = None
+    agreed_rate: Optional[float] = None
     negotiation_rounds: Optional[int] = None
     classification: Optional[str] = None
     sentiment: Optional[str] = None

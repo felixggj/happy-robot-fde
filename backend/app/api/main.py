@@ -99,7 +99,7 @@ async def evaluate_offer_endpoint(
         db=db,
         load_id=request.load_id,
         initial_rate=request.initial_rate,
-        negotiated_rate=request.negotiated_rate,
+        agreed_rate=request.agreed_rate,
         negotiation_rounds=request.negotiation_rounds
     )
 
@@ -117,7 +117,7 @@ async def complete_call(
         carrier_mc=request.carrier_mc,
         carrier_name=request.carrier_name,
         initial_rate=request.initial_rate,
-        negotiated_rate=request.negotiated_rate,
+        agreed_rate=request.agreed_rate,
         negotiation_rounds=request.negotiation_rounds,
         classification=request.classification,
         sentiment=request.sentiment,
@@ -147,7 +147,7 @@ async def get_call_sessions(
             "carrier_name": session.carrier_name,
             "load_id": session.load_id,
             "initial_rate": session.initial_rate,
-            "negotiated_rate": session.negotiated_rate,
+            "agreed_rate": session.agreed_rate,
             "negotiation_rounds": session.negotiation_rounds,
             "classification": session.classification,
             "sentiment": session.sentiment,
@@ -192,7 +192,7 @@ async def get_metrics(
     for call in calls:
         if call.classification == "accepted":
             # Use negotiated rate if available, otherwise initial rate
-            rate = call.negotiated_rate if call.negotiated_rate is not None else call.initial_rate
+            rate = call.agreed_rate if call.agreed_rate is not None else call.initial_rate
             if rate:
                 total_revenue += rate
 

@@ -35,7 +35,7 @@ interface CallSessionResponse {
   carrier_name: string;
   load_id: string;
   initial_rate: number;
-  negotiated_rate: number | null;
+  agreed_rate: number | null;
   negotiation_rounds: number;
   classification: string;
   sentiment: string;

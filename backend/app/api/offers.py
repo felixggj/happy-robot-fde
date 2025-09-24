@@ -9,7 +9,7 @@ def evaluate_offer(
     db: Session,
     load_id: str,
     initial_rate: float,
-    negotiated_rate: Optional[float] = None,
+    agreed_rate: Optional[float] = None,
     negotiation_rounds: Optional[int] = None
 ) -> Dict[str, Any]:
     """
@@ -30,8 +30,8 @@ def evaluate_offer(
     loadboard_rate = load.loadboard_rate
     floor_price = max(loadboard_rate * 0.9, loadboard_rate - 150)
 
-    # If no negotiated rate provided, use initial rate
-    carrier_offer = negotiated_rate if negotiated_rate is not None else initial_rate
+    # If no agreed rate provided, use initial rate
+    carrier_offer = agreed_rate if agreed_rate is not None else initial_rate
 
     # Check floor price
     if carrier_offer < floor_price:

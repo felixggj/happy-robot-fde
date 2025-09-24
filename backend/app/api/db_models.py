@@ -33,7 +33,7 @@ class CallSession(Base):
     carrier_name = Column(String(100))
     load_id = Column(String(50))
     initial_rate = Column(Float)
-    negotiated_rate = Column(Float)
+    agreed_rate = Column(Float)
     negotiation_rounds = Column(Integer)
     classification = Column(String(50))
     sentiment = Column(String(20))
