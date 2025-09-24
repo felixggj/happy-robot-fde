@@ -8,4 +8,4 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-CMD ["sh", "-c", "PORT=${PORT:-8080} node .next/standalone/server.js"]
+CMD ["sh", "-c", "npm start -- --port ${PORT:-8080} --hostname 0.0.0.0"]
