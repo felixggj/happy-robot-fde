@@ -5,4 +5,12 @@ const nextConfig = {
     API_KEY: process.env.API_KEY,
   },
   output: "standalone",
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://localhost:8000/api/:path*",
+      },
+    ];
+  },
 };
