@@ -25,12 +25,12 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
-
 COPY --from=frontend-builder /app/dashboard ./dashboard
 
-COPY start.sh .
-RUN chmod +x start.sh
+COPY start-backend.sh start-frontend.sh ./
+RUN chmod +x start-backend.sh start-frontend.sh
 
 EXPOSE 8000
 
-CMD ["./start.sh"]
+# Use SERVICE_TYPE env var to determine which service to run
+CMD ["sh", "-c", "if [ \"$SERVICE_TYPE\" = \"frontend\" ]; then ./start-frontend.sh; else ./start-backend.sh; fi"]
