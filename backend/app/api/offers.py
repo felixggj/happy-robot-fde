@@ -30,48 +30,45 @@ def evaluate_offer(
     loadboard_rate = load.loadboard_rate
     floor_price = max(loadboard_rate * 0.9, loadboard_rate - 150)
 
-    # If no agreed rate provided, use initial rate
-    carrier_offer = agreed_rate if agreed_rate is not None else initial_rate
-
-    # Check floor price
-    if carrier_offer < floor_price:
-        return {
-            "decision": "reject",
-            "rate": None,
-            "floor": floor_price,
-            "reason": f"Offer below minimum floor price of ${floor_price:.2f}"
-        }
-
-    # Check if offer is acceptable (within 5% of loadboard rate)
-    if carrier_offer >= loadboard_rate * 0.95:
+    # If agreed_rate is provided, evaluate final offer
+    if agreed_rate is not None:
+        if agreed_rate < floor_price:
+            return {
+                "decision": "reject",
+                "rate": None,
+                "floor": floor_price,
+                "reason": f"Final offer ${agreed_rate:.2f} below minimum floor price of ${floor_price:.2f}"
+            }
+        
         return {
             "decision": "accept",
-            "rate": carrier_offer,
+            "rate": agreed_rate,
             "floor": floor_price,
-            "reason": "Offer accepted"
+            "reason": f"Final offer accepted at ${agreed_rate:.2f}"
         }
 
-    # Calculate counter offer based on negotiation rounds (if provided)
-    if negotiation_rounds is not None and negotiation_rounds <= 3:
+    # No agreed rate - we're in negotiation mode
+    # Calculate counter offer based on negotiation rounds
+    round_number = negotiation_rounds if negotiation_rounds is not None else 1
+    
+    if round_number <= 3:
         # Progressive counter offers: 92%, 89%, 87% of loadboard rate
         counter_multipliers = [0.92, 0.89, 0.87]
-        multiplier = counter_multipliers[min(negotiation_rounds - 1, 2)]
+        multiplier = counter_multipliers[min(round_number - 1, 2)]
         counter_offer = loadboard_rate * multiplier
-
         counter_offer = max(counter_offer, floor_price)
-
+        
         return {
             "decision": "counter",
             "rate": round(counter_offer, 2),
             "floor": floor_price,
-            "reason": f"Counter offer: ${counter_offer:.2f}"
+            "reason": f"Counter offer round {round_number}: ${counter_offer:.2f}"
         }
-
-    # Default counter offer
-    counter_offer = max(loadboard_rate * 0.90, floor_price)
+    
+    # After 3 rounds, give floor price
     return {
         "decision": "counter",
-        "rate": round(counter_offer, 2),
+        "rate": round(floor_price, 2),
         "floor": floor_price,
-        "reason": f"Counter offer: ${counter_offer:.2f}"
+        "reason": f"Final counter offer: ${floor_price:.2f}"
     }

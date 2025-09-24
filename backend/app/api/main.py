@@ -1,14 +1,10 @@
 """FastAPI application for HappyRobot Carrier Sales API."""
 import os
-import logging
 from typing import Optional
 from fastapi import FastAPI, Depends, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -99,8 +95,6 @@ async def evaluate_offer_endpoint(
     api_key: str = Depends(verify_api_key)
 ):
     """Evaluate a carrier's offer."""
-    logger.info(f"OFFER EVALUATE - load_id: {request.load_id}, initial_rate: {request.initial_rate}, agreed_rate: {request.agreed_rate}, negotiation_rounds: {request.negotiation_rounds}")
-    
     return evaluate_offer(
         db=db,
         load_id=request.load_id,
@@ -117,8 +111,6 @@ async def complete_call(
     api_key: str = Depends(verify_api_key)
 ):
     """Store completed call data for metrics."""
-    logger.info(f"CALL COMPLETED - call_id: {request.call_id}, initial_rate: {request.initial_rate}, agreed_rate: {request.agreed_rate}, classification: {request.classification}")
-    
     call_session = CallSession(
         call_id=request.call_id,
         load_id=request.load_id,
