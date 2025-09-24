@@ -2,7 +2,7 @@ const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://backend-fde-production.up.railway.app";
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
-gti
+
 interface MetricsResponse {
   total_calls: number;
   conversion_rate: number;
