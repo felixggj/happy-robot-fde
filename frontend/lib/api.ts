@@ -30,16 +30,17 @@ interface LoadSearchResponse {
 }
 
 interface CallSessionResponse {
-  session_id: string;
+  call_id: string;
   carrier_mc: string;
   carrier_name: string;
   load_id: string;
   initial_rate: number;
   negotiated_rate: number | null;
   negotiation_rounds: number;
-  outcome: string;
+  classification: string;
   sentiment: string;
-  call_duration: number;
+  duration_sec: number;
+  transcript: string;
   created_at: string;
 }
 

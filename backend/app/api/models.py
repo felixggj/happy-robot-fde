@@ -52,7 +52,7 @@ class OfferEvaluateResponse(BaseModel):
 class CallCompleteRequest(BaseModel):
     call_id: str
     transcript: str
-    extraction: dict
+    extraction: dict  # Contains: load_id, carrier_mc, carrier_name, initial_rate, negotiated_rate, negotiation_rounds, sentiment
     classification: str
     duration_sec: int
 
@@ -60,6 +60,22 @@ class CallCompleteRequest(BaseModel):
 # Health Check
 class HealthResponse(BaseModel):
     status: str
+
+
+# Call Sessions
+class CallSessionResponse(BaseModel):
+    call_id: str
+    carrier_mc: Optional[str] = None
+    carrier_name: Optional[str] = None
+    load_id: Optional[str] = None
+    initial_rate: Optional[float] = None
+    negotiated_rate: Optional[float] = None
+    negotiation_rounds: Optional[int] = None
+    classification: Optional[str] = None
+    sentiment: Optional[str] = None
+    duration_sec: Optional[int] = None
+    transcript: Optional[str] = None
+    created_at: str
 
 
 # Metrics

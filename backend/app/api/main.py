@@ -110,18 +110,21 @@ async def complete_call(
     api_key: str = Depends(verify_api_key)
 ):
     """Store completed call data for metrics."""
-    # Create call session record
-    sentiment = None
-    if request.extraction and isinstance(request.extraction, dict):
-        sentiment = request.extraction.get("sentiment")
-
+    # Extract all data from the request
+    extraction_data = request.extraction if isinstance(request.extraction, dict) else {}
+    
     call_session = CallSession(
-        session_id=request.call_id,
-        transcript=request.transcript,
-        extracted_data=str(request.extraction),  # Store as JSON string
-        outcome=request.classification,
-        sentiment=sentiment,
-        call_duration=request.duration_sec
+        call_id=request.call_id,
+        load_id=extraction_data.get("load_id"),
+        carrier_mc=extraction_data.get("carrier_mc"),
+        carrier_name=extraction_data.get("carrier_name"),
+        initial_rate=extraction_data.get("initial_rate"),
+        negotiated_rate=extraction_data.get("negotiated_rate"),
+        negotiation_rounds=extraction_data.get("negotiation_rounds", 1),
+        classification=request.classification,
+        sentiment=extraction_data.get("sentiment"),
+        duration_sec=request.duration_sec,
+        transcript=request.transcript
     )
 
     db.add(call_session)
@@ -141,16 +144,17 @@ async def get_call_sessions(
     
     return [
         {
-            "session_id": session.session_id,
+            "call_id": session.call_id,
             "carrier_mc": session.carrier_mc,
             "carrier_name": session.carrier_name,
             "load_id": session.load_id,
             "initial_rate": session.initial_rate,
             "negotiated_rate": session.negotiated_rate,
             "negotiation_rounds": session.negotiation_rounds,
-            "outcome": session.outcome,
+            "classification": session.classification,
             "sentiment": session.sentiment,
-            "call_duration": session.call_duration,
+            "duration_sec": session.duration_sec,
+            "transcript": session.transcript,
             "created_at": session.created_at.isoformat() if session.created_at else None
         }
         for session in sessions
@@ -172,7 +176,7 @@ async def get_metrics(
 
     calls = db.query(CallSession).all()
     for call in calls:
-        outcome = call.outcome or "unknown"
+        outcome = call.classification or "unknown"
         outcomes[outcome] = outcomes.get(outcome, 0) + 1
 
         sentiment = call.sentiment or "unknown"
@@ -188,7 +192,7 @@ async def get_metrics(
     # Calculate actual revenue from accepted calls
     total_revenue = 0
     for call in calls:
-        if call.outcome == "accepted":
+        if call.classification == "accepted":
             # Use negotiated rate if available, otherwise initial rate
             rate = call.negotiated_rate if call.negotiated_rate is not None else call.initial_rate
             if rate:

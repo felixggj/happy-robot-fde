@@ -4,16 +4,17 @@ import { useState, useEffect } from "react";
 import { getCallSessions } from "@/lib/api";
 
 interface CallSession {
-  session_id: string;
+  call_id: string;
   carrier_mc: string;
   carrier_name: string;
   load_id: string;
   initial_rate: number;
   negotiated_rate: number | null;
   negotiation_rounds: number;
-  outcome: string;
+  classification: string;
   sentiment: string;
-  call_duration: number;
+  duration_sec: number;
+  transcript: string;
   created_at: string;
 }
 
@@ -45,8 +46,8 @@ export function CallsTable({}: CallsTableProps) {
     fetchCallSessions();
   }, []);
 
-  const getOutcomeColor = (outcome: string) => {
-    switch (outcome) {
+  const getClassificationColor = (classification: string) => {
+    switch (classification) {
       case "accepted":
         return "bg-green-100 text-green-800";
       case "rejected":
@@ -132,12 +133,12 @@ export function CallsTable({}: CallsTableProps) {
                 </td>
                 <td className="px-4 py-1.5 whitespace-nowrap">
                   <span
-                    className={`px-2 py-0.5 rounded text-xs font-medium ${getOutcomeColor(
-                      session.outcome
+                    className={`px-2 py-0.5 rounded text-xs font-medium ${getClassificationColor(
+                      session.classification
                     )}`}
                   >
-                    {session.outcome?.charAt(0).toUpperCase() +
-                      session.outcome?.slice(1)}
+                    {session.classification?.charAt(0).toUpperCase() +
+                      session.classification?.slice(1)}
                   </span>
                 </td>
                 <td className="px-4 py-1.5 whitespace-nowrap">

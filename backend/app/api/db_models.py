@@ -28,16 +28,15 @@ class CallSession(Base):
     """Call session for tracking negotiations and outcomes."""
     __tablename__ = "call_sessions"
 
-    session_id = Column(String(100), primary_key=True)
+    call_id = Column(String(100), primary_key=True)
     carrier_mc = Column(String(20))
     carrier_name = Column(String(100))
     load_id = Column(String(50))
     initial_rate = Column(Float)
     negotiated_rate = Column(Float)
     negotiation_rounds = Column(Integer)
-    outcome = Column(String(50))
+    classification = Column(String(50))
     sentiment = Column(String(20))
-    call_duration = Column(Integer)
+    duration_sec = Column(Integer)
     transcript = Column(Text)
-    extracted_data = Column(Text)  # JSON string
     created_at = Column(DateTime, server_default=func.current_timestamp())
