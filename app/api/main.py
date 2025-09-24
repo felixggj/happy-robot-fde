@@ -56,20 +56,6 @@ async def health_check():
     return HealthResponse(status="ok")
 
 
-@app.get("/api/debug/loads")
-async def debug_loads(api_key: str = Depends(verify_api_key), db: Session = Depends(get_db)):
-    """Debug endpoint to view all loads"""
-    loads = db.query(Load).all()
-    return {"loads": [{"load_id": load.load_id, "origin": load.origin, "destination": load.destination, "loadboard_rate": load.loadboard_rate} for load in loads]}
-
-
-@app.get("/api/debug/call-sessions")
-async def debug_call_sessions(api_key: str = Depends(verify_api_key), db: Session = Depends(get_db)):
-    """Debug endpoint to view all call sessions"""
-    sessions = db.query(CallSession).all()
-    return {"sessions": [{"session_id": session.session_id, "outcome": session.outcome, "sentiment": session.sentiment} for session in sessions]}
-
-
 @app.post("/api/verify", response_model=CarrierVerifyResponse)
 async def verify_carrier_endpoint(
     request: CarrierVerifyRequest,
