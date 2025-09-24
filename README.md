@@ -1,80 +1,122 @@
-# HappyRobot Carrier Sales API
+# HappyRobot Automated Carrier Sales System
 
-Backend API for automated freight broker carrier sales negotiations.
+Freight brokerage automation platform with AI phone integration, pricing negotiation, and carrier verification.
 
-## Features
+## Overview
 
-- **Carrier Verification**: FMCSA API integration for carrier eligibility checking
-- **Load Search**: Intelligent load matching with scoring
-- **Price Negotiation**: Automated offer evaluation with floor pricing
-- **Call Analytics**: Metrics and reporting for call outcomes
-- **HappyRobot Integration**: Webhook endpoints for workflow automation
+- **Backend**: FastAPI REST API with PostgreSQL database
+- **Frontend**: Next.js dashboard with real-time analytics
+- **Integration**: HappyRobot AI phone automation
+- **Features**: FMCSA verification, dynamic pricing, call tracking
 
-## Quick Start
+## Tech Stack
 
-### Local Development
+**Backend:** FastAPI 0.104.1, SQLAlchemy 2.0.23, PostgreSQL  
+**Frontend:** Next.js 14.0.3, React 18, TypeScript, Tailwind CSS  
+**Deployment:** Docker containers on Railway
+
+## Project Structure
+
+```
+HappyRobot/
+├── backend/
+│   ├── app/api/
+│   │   ├── main.py              # FastAPI application
+│   │   ├── models.py            # Pydantic models
+│   │   ├── offers.py            # Pricing logic
+│   │   ├── fmcsa.py             # Carrier verification
+│   │   └── db_models.py         # Database models
+│   └── requirements.txt
+├── frontend/
+│   ├── app/                     # Next.js pages
+│   ├── components/              # React components
+│   ├── lib/api.ts              # API client
+│   └── package.json
+```
+
+## Local Development
+
+Prerequisites: Python 3.9+, Node.js 18+
+
+### Backend
 
 ```bash
-# Create virtual environment
+cd backend
 python -m venv venv
 source venv/bin/activate
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Set environment variables
 export API_KEY=your-api-key
-
-# Run application
-python -m uvicorn app.api.main:app --reload --host 0.0.0.0 --port 8000
+python -m uvicorn app.api.main:app --reload --port 8000
 ```
 
-### Docker
+### Frontend
 
 ```bash
-# Build and run
-docker build -t carrier-sales-api .
-docker run -p 8000:8000 -v $(pwd)/app:/app/app -e API_KEY=your-api-key carrier-sales-api
+cd frontend
+npm install
+export NEXT_PUBLIC_API_URL=http://localhost:8000
+export NEXT_PUBLIC_API_KEY=your-api-key
+npm run dev
 ```
 
-### Railway Deployment
+## Railway Deployment
 
-1. Connect GitHub repository to Railway
-2. Set environment variables:
-   - `API_KEY`: Your API key for authentication
-   - `FMCSA_WEBKEY`: FMCSA API key (for production)
-3. Deploy
+### Backend
+
+1. Create Railway project, link GitHub repo
+2. Set root directory to `/backend`
+3. Add environment variables:
+   ```
+   API_KEY=your-production-api-key
+   FMCSA_WEBKEY=your-fmcsa-api-key
+   ```
+4. Deploy with `railway up`
+
+### Frontend
+
+1. Create new Railway project
+2. Set root directory to `/frontend`
+3. Add environment variables:
+   ```
+   NEXT_PUBLIC_API_URL=https://your-backend-url.railway.app
+   NEXT_PUBLIC_API_KEY=your-api-key
+   ```
+4. Deploy with `railway up`
 
 ## API Endpoints
 
-All endpoints require `x-api-key` header authentication.
+Base URL: `https://backend-fde-production.up.railway.app`  
+Authentication: `x-api-key` header required
 
-### Health Check
-
-- `GET /api/health` → `{"status": "ok"}`
-
-### Carrier Verification
-
-- `POST /api/verify` → Verify carrier eligibility
-
-### Load Search
-
-- `GET /api/loads/search` → Search available loads with filtering
-
-### Offer Evaluation
-
-- `POST /api/offers/evaluate` → Evaluate carrier offers
-
-### Call Completion
-
-- `POST /api/events/call-completed` → Record call data
-
-### Metrics
-
-- `GET /api/metrics` → Get analytics and reporting
+| Method | Endpoint                     | Description                |
+| ------ | ---------------------------- | -------------------------- |
+| `GET`  | `/api/health`                | Health check               |
+| `POST` | `/api/verify`                | FMCSA carrier verification |
+| `GET`  | `/api/loads/search`          | Search available loads     |
+| `POST` | `/api/offers/evaluate`       | Evaluate carrier offers    |
+| `POST` | `/api/events/call-completed` | Record call session data   |
+| `GET`  | `/api/call-sessions`         | Get recent call history    |
+| `GET`  | `/api/metrics`               | Get analytics and KPIs     |
 
 ## Environment Variables
 
-- `API_KEY`: Required API key for authentication
-- `FMCSA_WEBKEY`: FMCSA API key for carrier verification
-- `DATABASE_URL`: Database connection string (defaults to SQLite)
+**Backend:**
+
+```bash
+API_KEY=your-secure-api-key
+FMCSA_WEBKEY=your-fmcsa-api-key
+DATABASE_URL=postgresql://user:pass@host:port/db
+```
+
+**Frontend:**
+
+```bash
+NEXT_PUBLIC_API_URL=https://your-backend-url.railway.app
+NEXT_PUBLIC_API_KEY=your-api-key
+```
+
+## Live Deployments
+
+- **Backend API**: https://backend-fde-production.up.railway.app
+- **Frontend Dashboard**: https://frontend-fde-production.up.railway.app
+- **API Documentation**: https://backend-fde-production.up.railway.app/docs

@@ -23,7 +23,7 @@ def evaluate_offer(
         return {
             "decision": "reject",
             "rate": None,
-            "floor": 0,
+            "floor": 0.0,
             "reason": "Load not found"
         }
 

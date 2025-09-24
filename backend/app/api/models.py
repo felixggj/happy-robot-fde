@@ -65,8 +65,6 @@ class CallCompleteRequest(BaseModel):
     classification: str
     sentiment: Optional[str] = None
     duration_sec: int
-    extraction: Optional[dict] = None  # Optional for backward compatibility
-    sentiment_test: Optional[str] = None  # Extra field from HappyRobot
     
     class Config:
         extra = "ignore"  # Ignore extra fields
