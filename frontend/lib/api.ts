@@ -44,11 +44,16 @@ interface CallSessionResponse {
 }
 
 async function apiRequest(endpoint: string, options: RequestInit = {}) {
+  console.log("API_KEY:", API_KEY);
+  console.log("API_URL:", API_URL);
+
   const headers = {
     "Content-Type": "application/json",
     "x-api-key": API_KEY || "",
     ...options.headers,
   };
+
+  console.log("Headers being sent:", headers);
 
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
