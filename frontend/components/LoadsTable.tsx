@@ -176,7 +176,7 @@ export function LoadsTable() {
                   <div className="text-xs text-gray-900 space-y-0.5">
                     {load.weight && (
                       <div className="text-gray-500">
-                        {load.weight.toLocaleString()} lbs
+                        {(load.weight || 0).toLocaleString()} lbs
                       </div>
                     )}
                     {load.num_of_pieces && (

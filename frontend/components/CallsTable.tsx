@@ -143,8 +143,8 @@ export function CallsTable({}: CallsTableProps) {
                 <td className="px-4 py-1.5 whitespace-nowrap">
                   <div className="text-xs text-gray-900">
                     {session.negotiated_rate
-                      ? `$${session.negotiated_rate.toLocaleString()}`
-                      : `$${session.initial_rate.toLocaleString()}`}
+                      ? `$${(session.negotiated_rate || 0).toLocaleString()}`
+                      : `$${(session.initial_rate || 0).toLocaleString()}`}
                   </div>
                 </td>
                 <td className="px-4 py-1.5 whitespace-nowrap">
