@@ -2,10 +2,8 @@
 import os
 import logging
 from typing import Optional
-from fastapi import FastAPI, Depends, HTTPException, Header, Request
+from fastapi import FastAPI, Depends, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
@@ -40,19 +38,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """Log validation errors for debugging."""
-    body = await request.body()
-    logger.error(f"Validation error on {request.method} {request.url.path}")
-    logger.error(f"Request body: {body.decode()}")
-    logger.error(f"Validation errors: {exc.errors()}")
-    
-    return JSONResponse(
-        status_code=422,
-        content={"detail": exc.errors(), "body": body.decode()}
-    )
 
 @app.on_event("startup")
 async def startup_event():
@@ -114,6 +99,8 @@ async def evaluate_offer_endpoint(
     api_key: str = Depends(verify_api_key)
 ):
     """Evaluate a carrier's offer."""
+    logger.info(f"OFFER EVALUATE - load_id: {request.load_id}, initial_rate: {request.initial_rate}, agreed_rate: {request.agreed_rate}, negotiation_rounds: {request.negotiation_rounds}")
+    
     return evaluate_offer(
         db=db,
         load_id=request.load_id,
@@ -130,6 +117,8 @@ async def complete_call(
     api_key: str = Depends(verify_api_key)
 ):
     """Store completed call data for metrics."""
+    logger.info(f"CALL COMPLETED - call_id: {request.call_id}, initial_rate: {request.initial_rate}, agreed_rate: {request.agreed_rate}, classification: {request.classification}")
+    
     call_session = CallSession(
         call_id=request.call_id,
         load_id=request.load_id,
