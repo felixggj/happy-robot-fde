@@ -1,6 +1,6 @@
 """Pydantic models for API requests and responses."""
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 # FMCSA Verification
@@ -43,6 +43,42 @@ class OfferEvaluateRequest(BaseModel):
     
     class Config:
         extra = "ignore"  # Ignore extra fields
+        
+    @validator('initial_rate', pre=True)
+    def parse_initial_rate(cls, v):
+        if v is None or v == "":
+            raise ValueError("initial_rate is required")
+        try:
+            return float(v)
+        except (ValueError, TypeError):
+            raise ValueError(f"invalid initial_rate: {v}")
+            
+    @validator('agreed_rate', pre=True)
+    def parse_agreed_rate(cls, v):
+        if v is None or v == "":
+            return None
+        try:
+            return float(v)
+        except (ValueError, TypeError):
+            raise ValueError(f"invalid agreed_rate: {v}")
+            
+    @validator('negotiation_rounds', pre=True)
+    def parse_negotiation_rounds(cls, v):
+        if v is None or v == "":
+            return None
+        try:
+            return int(v)
+        except (ValueError, TypeError):
+            raise ValueError(f"invalid negotiation_rounds: {v}")
+            
+    @validator('counter_offer', pre=True)
+    def parse_counter_offer(cls, v):
+        if v is None or v == "":
+            return None
+        try:
+            return float(v)
+        except (ValueError, TypeError):
+            raise ValueError(f"invalid counter_offer: {v}")
 
 
 class OfferEvaluateResponse(BaseModel):
@@ -68,6 +104,81 @@ class CallCompleteRequest(BaseModel):
     
     class Config:
         extra = "ignore"  # Ignore extra fields
+        
+    @validator('load_id', pre=True)
+    def parse_load_id(cls, v):
+        if v == "":
+            return None
+        return v
+        
+    @validator('carrier_mc', pre=True)
+    def parse_carrier_mc(cls, v):
+        if v == "":
+            return None
+        return v
+        
+    @validator('carrier_name', pre=True)
+    def parse_carrier_name(cls, v):
+        if v == "":
+            return None
+        return v
+        
+    @validator('transcript', pre=True)
+    def parse_transcript(cls, v):
+        if v is None:
+            raise ValueError("transcript is required")
+        # Handle case where transcript comes as "[]" or empty
+        if v == "[]" or v == "":
+            return ""
+        return str(v)
+        
+    @validator('initial_rate', pre=True)
+    def parse_initial_rate(cls, v):
+        if v is None or v == "":
+            return None
+        try:
+            return float(v)
+        except (ValueError, TypeError):
+            raise ValueError(f"invalid initial_rate: {v}")
+            
+    @validator('agreed_rate', pre=True)
+    def parse_agreed_rate(cls, v):
+        if v is None or v == "":
+            return None
+        try:
+            return float(v)
+        except (ValueError, TypeError):
+            raise ValueError(f"invalid agreed_rate: {v}")
+            
+    @validator('negotiation_rounds', pre=True)
+    def parse_negotiation_rounds(cls, v):
+        if v is None or v == "":
+            return None
+        try:
+            return int(v)
+        except (ValueError, TypeError):
+            raise ValueError(f"invalid negotiation_rounds: {v}")
+            
+    @validator('sentiment', pre=True)
+    def parse_sentiment(cls, v):
+        if v == "":
+            return None
+        return v
+        
+    @validator('duration_sec', pre=True)
+    def parse_duration_sec(cls, v):
+        if v is None or v == "":
+            raise ValueError("duration_sec is required")
+        try:
+            return int(v)
+        except (ValueError, TypeError):
+            raise ValueError(f"invalid duration_sec: {v}")
+            
+    @validator('classification', pre=True)
+    def parse_classification(cls, v):
+        if v is None or v == "":
+            raise ValueError("classification is required")
+        return str(v)
 
 
 # Health Check
