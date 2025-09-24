@@ -120,7 +120,7 @@ export function CallsTable({}: CallsTableProps) {
           </thead>
           <tbody className="bg-white divide-y divide-gray-100">
             {callSessions.map((session) => (
-              <tr key={session.session_id} className="hover:bg-gray-50/50">
+              <tr key={session.call_id} className="hover:bg-gray-50/50">
                 <td className="px-4 py-1.5 whitespace-nowrap">
                   <div className="text-xs text-gray-900">
                     {session.carrier_name}
