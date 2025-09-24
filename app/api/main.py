@@ -130,6 +130,33 @@ async def complete_call(
     return {"status": "recorded"}
 
 
+@app.get("/api/call-sessions")
+async def get_call_sessions(
+    limit: int = 20,
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key)
+):
+    """Get recent call sessions."""
+    sessions = db.query(CallSession).order_by(CallSession.created_at.desc()).limit(limit).all()
+    
+    return [
+        {
+            "session_id": session.session_id,
+            "carrier_mc": session.carrier_mc,
+            "carrier_name": session.carrier_name,
+            "load_id": session.load_id,
+            "initial_rate": session.initial_rate,
+            "negotiated_rate": session.negotiated_rate,
+            "negotiation_rounds": session.negotiation_rounds,
+            "outcome": session.outcome,
+            "sentiment": session.sentiment,
+            "call_duration": session.call_duration,
+            "created_at": session.created_at.isoformat() if session.created_at else None
+        }
+        for session in sessions
+    ]
+
+
 @app.get("/api/metrics", response_model=MetricsResponse)
 async def get_metrics(
     db: Session = Depends(get_db),
@@ -145,21 +172,33 @@ async def get_metrics(
 
     calls = db.query(CallSession).all()
     for call in calls:
-        # Outcomes
         outcome = call.outcome or "unknown"
         outcomes[outcome] = outcomes.get(outcome, 0) + 1
 
-        # Sentiment
         sentiment = call.sentiment or "unknown"
         sentiment_dist[sentiment] = sentiment_dist.get(sentiment, 0) + 1
 
-    # Calculate conversion rate (accepted calls)
+    # Calculate conversion rate
     conversion_rate = (outcomes.get("accepted", 0) / total_calls * 100) if total_calls > 0 else 0
+
+    # Calculate average negotiation rounds
+    negotiation_rounds = [call.negotiation_rounds for call in calls if call.negotiation_rounds is not None]
+    avg_negotiation_rounds = sum(negotiation_rounds) / len(negotiation_rounds) if negotiation_rounds else 0
+
+    # Calculate actual revenue from accepted calls
+    total_revenue = 0
+    for call in calls:
+        if call.outcome == "accepted":
+            # Use negotiated rate if available, otherwise initial rate
+            rate = call.negotiated_rate if call.negotiated_rate is not None else call.initial_rate
+            if rate:
+                total_revenue += rate
 
     return MetricsResponse(
         total_calls=total_calls,
         conversion_rate=round(conversion_rate, 2),
-        avg_negotiation_rounds=0,
+        avg_negotiation_rounds=round(avg_negotiation_rounds, 2),
         outcomes=outcomes,
-        sentiment=sentiment_dist
+        sentiment=sentiment_dist,
+        total_revenue=round(total_revenue, 2)
     )

@@ -69,3 +69,4 @@ class MetricsResponse(BaseModel):
     avg_negotiation_rounds: float
     outcomes: dict
     sentiment: dict
+    total_revenue: float
