@@ -98,8 +98,9 @@ async def evaluate_offer_endpoint(
     return evaluate_offer(
         db=db,
         load_id=request.load_id,
-        ask_rate=request.ask_rate,
-        counter_rate=request.counter_rate
+        initial_rate=request.initial_rate,
+        negotiated_rate=request.negotiated_rate,
+        negotiation_rounds=request.negotiation_rounds
     )
 
 
@@ -110,19 +111,16 @@ async def complete_call(
     api_key: str = Depends(verify_api_key)
 ):
     """Store completed call data for metrics."""
-    # Extract all data from the request
-    extraction_data = request.extraction if isinstance(request.extraction, dict) else {}
-    
     call_session = CallSession(
         call_id=request.call_id,
-        load_id=extraction_data.get("load_id"),
-        carrier_mc=extraction_data.get("carrier_mc"),
-        carrier_name=extraction_data.get("carrier_name"),
-        initial_rate=extraction_data.get("initial_rate"),
-        negotiated_rate=extraction_data.get("negotiated_rate"),
-        negotiation_rounds=extraction_data.get("negotiation_rounds", 1),
+        load_id=request.load_id,
+        carrier_mc=request.carrier_mc,
+        carrier_name=request.carrier_name,
+        initial_rate=request.initial_rate,
+        negotiated_rate=request.negotiated_rate,
+        negotiation_rounds=request.negotiation_rounds,
         classification=request.classification,
-        sentiment=extraction_data.get("sentiment"),
+        sentiment=request.sentiment,
         duration_sec=request.duration_sec,
         transcript=request.transcript
     )

@@ -36,13 +36,13 @@ class LoadSearchResponse(BaseModel):
 # Negotiation
 class OfferEvaluateRequest(BaseModel):
     load_id: str
-    ask_rate: float
-    counter_rate: Optional[float] = None
-    carrier_history: Optional[dict] = None
+    initial_rate: float
+    negotiated_rate: Optional[float] = None
+    negotiation_rounds: Optional[int] = None
 
 
 class OfferEvaluateResponse(BaseModel):
-    decision: str  # "accept" | "counter" | "reject"
+    decision: str 
     rate: Optional[float] = None
     floor: float
     reason: str
@@ -51,10 +51,17 @@ class OfferEvaluateResponse(BaseModel):
 # Call Completion
 class CallCompleteRequest(BaseModel):
     call_id: str
+    load_id: Optional[str] = None
+    carrier_mc: Optional[str] = None
+    carrier_name: Optional[str] = None
     transcript: str
-    extraction: dict  # Contains: load_id, carrier_mc, carrier_name, initial_rate, negotiated_rate, negotiation_rounds, sentiment
+    initial_rate: Optional[float] = None
+    negotiated_rate: Optional[float] = None
+    negotiation_rounds: Optional[int] = None
     classification: str
+    sentiment: Optional[str] = None
     duration_sec: int
+    extraction: Optional[dict] = None  # Optional for backward compatibility
 
 
 # Health Check

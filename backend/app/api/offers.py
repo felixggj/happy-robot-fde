@@ -8,9 +8,9 @@ from .db_models import Load
 def evaluate_offer(
     db: Session,
     load_id: str,
-    ask_rate: float,
-    counter_rate: Optional[float] = None,
-    round_index: Optional[int] = None
+    initial_rate: float,
+    negotiated_rate: Optional[float] = None,
+    negotiation_rounds: Optional[int] = None
 ) -> Dict[str, Any]:
     """
     Evaluate a carrier's offer against negotiation rules.
@@ -30,8 +30,8 @@ def evaluate_offer(
     loadboard_rate = load.loadboard_rate
     floor_price = max(loadboard_rate * 0.9, loadboard_rate - 150)
 
-    # If no counter rate provided, use ask rate
-    carrier_offer = counter_rate if counter_rate is not None else ask_rate
+    # If no negotiated rate provided, use initial rate
+    carrier_offer = negotiated_rate if negotiated_rate is not None else initial_rate
 
     # Check floor price
     if carrier_offer < floor_price:
@@ -51,14 +51,13 @@ def evaluate_offer(
             "reason": "Offer accepted"
         }
 
-    # Calculate counter offer based on round (if provided)
-    if round_index is not None and round_index <= 3:
+    # Calculate counter offer based on negotiation rounds (if provided)
+    if negotiation_rounds is not None and negotiation_rounds <= 3:
         # Progressive counter offers: 92%, 89%, 87% of loadboard rate
         counter_multipliers = [0.92, 0.89, 0.87]
-        multiplier = counter_multipliers[min(round_index - 1, 2)]
+        multiplier = counter_multipliers[min(negotiation_rounds - 1, 2)]
         counter_offer = loadboard_rate * multiplier
 
-        # Ensure counter offer is above floor
         counter_offer = max(counter_offer, floor_price)
 
         return {
