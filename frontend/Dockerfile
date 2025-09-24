@@ -2,6 +2,9 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_API_KEY
+
 COPY package*.json ./
 RUN npm ci
 
