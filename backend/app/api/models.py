@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 # FMCSA Verification
 class CarrierVerifyRequest(BaseModel):
-    mcNumber: str
+    carrier_mc: str
 
 
 class CarrierVerifyResponse(BaseModel):

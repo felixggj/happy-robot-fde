@@ -10,17 +10,17 @@ FMCSA_WEBKEY = os.getenv("FMCSA_WEBKEY")
 FMCSA_BASE_URL = "https://mobile.fmcsa.dot.gov/qc/services/carriers"
 
 
-async def verify_carrier(mc_number: str) -> Dict[str, Any]:
+async def verify_carrier(carrier_mc: str) -> Dict[str, Any]:
     """
     Verify carrier eligibility with FMCSA API using MC number.
     
     Args:
-        mc_number: Motor Carrier number (MC-123456 or just 123456)
+        carrier_mc: Motor Carrier number (MC-123456 or just 123456)
         
     Returns:
         Dict containing eligibility status, legal name, and risk notes
     """
-    if not mc_number:
+    if not carrier_mc:
         return {
             "eligible": False,
             "legalName": None,
@@ -30,11 +30,11 @@ async def verify_carrier(mc_number: str) -> Dict[str, Any]:
 
     if not FMCSA_WEBKEY:
         logger.warning("FMCSA_WEBKEY not configured, using fallback verification")
-        return _fallback_verification(mc_number)
+        return _fallback_verification(carrier_mc)
 
     try:
         # Extract digits only from MC number
-        mc_digits = "".join(filter(str.isdigit, mc_number))
+        mc_digits = "".join(filter(str.isdigit, carrier_mc))
         
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get(
@@ -54,14 +54,14 @@ async def verify_carrier(mc_number: str) -> Dict[str, Any]:
                 }
             else:
                 logger.error(f"FMCSA API error: {response.status_code} - {response.text}")
-                return _fallback_verification(mc_number)
+                return _fallback_verification(carrier_mc)
                 
     except httpx.TimeoutException:
         logger.error("FMCSA API timeout")
-        return _fallback_verification(mc_number)
+        return _fallback_verification(carrier_mc)
     except Exception as e:
         logger.error(f"FMCSA API error: {str(e)}")
-        return _fallback_verification(mc_number)
+        return _fallback_verification(carrier_mc)
 
 
 def _parse_fmcsa_response(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -111,7 +111,7 @@ def _parse_fmcsa_response(data: Dict[str, Any]) -> Dict[str, Any]:
         }
 
 
-def _fallback_verification(mc_number: str) -> Dict[str, Any]:
+def _fallback_verification(carrier_mc: str) -> Dict[str, Any]:
     """Fallback when FMCSA API is unavailable - returns error for production safety."""
     logger.error("FMCSA API unavailable and no fallback configured for production")
     

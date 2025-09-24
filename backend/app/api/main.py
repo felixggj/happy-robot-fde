@@ -62,7 +62,7 @@ async def verify_carrier_endpoint(
     api_key: str = Depends(verify_api_key)
 ):
     """Verify carrier eligibility with FMCSA."""
-    return await verify_carrier(request.mcNumber)
+    return await verify_carrier(request.carrier_mc)
 
 
 @app.get("/api/loads/search", response_model=list[LoadSearchResponse])
